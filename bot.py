@@ -29,13 +29,13 @@ def convert_to_affiliate_link(url):
         else:
             url += f"?affid={affiliate_id}"
     elif "myntra" in url:
-        affiliate_id = "your_myntra_affiliate_id"
+        affiliate_id = "https://earnkaro.com?r=695769&fname=Ritik+Sakhala"
         if "?" in url:
             url += f"&affid={affiliate_id}"
         else:
             url += f"?affid={affiliate_id}"
     elif "ajio" in url:
-        affiliate_id = "your_ajio_affiliate_id"
+        affiliate_id = "https://earnkaro.com?r=695769&fname=Ritik+Sakhala"
         if "?" in url:
             url += f"&affid={affiliate_id}"
         else:
