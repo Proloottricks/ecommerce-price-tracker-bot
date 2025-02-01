@@ -1,8 +1,11 @@
+import os
+import json
 import firebase_admin
 from firebase_admin import credentials, firestore
 
-# Initialize Firebase
-cred = credentials.Certificate("firebase_credentials.json")  # Path to Firebase credentials file
+# Koyeb ke Environment Variable se Firebase Credentials Load Karna
+firebase_credentials = json.loads(os.getenv("FIREBASE_CREDENTIALS"))  
+cred = credentials.Certificate(firebase_credentials)
 firebase_admin.initialize_app(cred)
 
 # Firebase client
