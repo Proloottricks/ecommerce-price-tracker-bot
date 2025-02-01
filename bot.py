@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 # Affiliate link conversion function
 def convert_to_affiliate_link(url):
     if "amazon" in url:
-        affiliate_id = "your_amazon_affiliate_id"
+        affiliate_id = "lootdealsrs0f-21"
         if "?" in url:
             url += f"&tag={affiliate_id}"
         else:
