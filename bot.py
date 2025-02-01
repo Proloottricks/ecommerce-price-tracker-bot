@@ -23,7 +23,7 @@ def convert_to_affiliate_link(url):
         else:
             url += f"?tag={affiliate_id}"
     elif "flipkart" in url:
-        affiliate_id = "your_flipkart_affiliate_id"
+        affiliate_id = "rohanpouri&affExtParam1=ENKR20250104A1270707247&affExtParam2=695769"
         if "?" in url:
             url += f"&affid={affiliate_id}"
         else:
