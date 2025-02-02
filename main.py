@@ -31,16 +31,3 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # Track price command (Placeholder Function)
 async def track(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("✅ Your product is now being tracked!")
-
-# Main function to start bot
-def main():
-    app = Application.builder().token(TELEGRAM_TOKEN).build()
-
-    app.add_handler(CommandHandler("start", start))
-    app.add_handler(CommandHandler("track", track))
-
-    print("🤖 Bot is running...")
-    app.run_polling()
-
-if __name__ == "__main__":
-    main()
