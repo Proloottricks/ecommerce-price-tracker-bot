@@ -39,16 +39,25 @@ def get_price(url):
     
     if "amazon" in url:
         price = soup.find("span", {"class": "a-price-whole"}).text
+        affiliate_tag = os.getenv('AMAZON_AFFILIATE_TAG')
+        affiliate_link = f"{url}?tag={affiliate_tag}"
     elif "flipkart" in url:
         price = soup.find("div", {"class": "_30jeq3"}).text
+        affiliate_tag = os.getenv('FLIPKART_AFFILIATE_TAG')
+        affiliate_link = f"{url}?affid={affiliate_tag}"
     elif "myntra" in url:
         price = soup.find("span", {"class": "p_price"}).text
+        affiliate_tag = os.getenv('MYNTRA_AFFILIATE_TAG')
+        affiliate_link = f"{url}?utm_source={affiliate_tag}"
     elif "ajio" in url:
         price = soup.find("span", {"class": "price"}).text
+        affiliate_tag = os.getenv('AJIO_AFFILIATE_TAG')
+        affiliate_link = f"{url}?utm_campaign={affiliate_tag}"
     else:
         price = "Site not supported"
+        affiliate_link = url  # No affiliate tag for unsupported sites
     
-    return price.strip()
+    return price.strip(), affiliate_link
 
 def track_prices(context: CallbackContext):
     products = db.collection("tracked_products").get()
@@ -56,10 +65,10 @@ def track_prices(context: CallbackContext):
         data = product.to_dict()
         url, user_id, target_price = data["url"], data["user_id"], data["target_price"]
         
-        current_price = get_price(url)
+        current_price, affiliate_link = get_price(url)
         
         if current_price and float(current_price.replace(",", "")) <= target_price:
-            context.bot.send_message(chat_id=user_id, text=f"Price dropped! {url}")
+            context.bot.send_message(chat_id=user_id, text=f"Price dropped! {affiliate_link}")
     
     time.sleep(3600)  # Check price every hour
 
