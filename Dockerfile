@@ -1,20 +1,16 @@
-# Use official Python image from Docker Hub
 FROM python:3.9-slim
 
-# Set the working directory in the container
+# Set the working directory
 WORKDIR /app
 
-# Copy the current directory contents into the container at /app
+# Copy all files to the container
 COPY . /app
 
-# Copy the credentials file into the container
-COPY credentials.json /app/credentials.json
-
-# Install any dependencies in requirements.txt
+# Install dependencies from requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Expose the port (if needed)
 EXPOSE 5000
 
-# Run the bot when the container launches
+# Set the entry point for the application
 CMD ["python", "main.py"]
