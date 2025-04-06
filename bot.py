@@ -12,6 +12,7 @@ from database import add_product, get_user_products, stop_tracking
 from scraper import scrape_price
 from utils import generate_affiliate_link
 from dotenv import load_dotenv
+from datetime import datetime
 
 load_dotenv()
 
@@ -44,32 +45,23 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 parse_mode="Markdown"
             )
 
-def main():
-    # Builder pattern without inline comments
-    application = (
-        Application.builder()
-        .token(os.getenv("TELEGRAM_TOKEN"))
-        .read_timeout(60)
-        .get_updates_read_timeout(60)
-        .pool_timeout(60)
+def run_bot():
+    application = Application.builder() \
+        .token(os.getenv("TELEGRAM_TOKEN")) \
         .build()
-    )
     
     application.add_handler(CommandHandler("start", start))
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
     
-    try:
-        print("Starting bot...")
-        application.run_polling(
-            poll_interval=3.0,
-            timeout=60,
-            drop_pending_updates=True,
-            close_loop=False
-        )
-    except Exception as e:
-        print(f"Bot error: {e}")
-    finally:
-        print("Bot stopped")
+    application.run_polling()
 
 if __name__ == "__main__":
-    main()
+    # Run bot with auto-restart
+    while True:
+        try:
+            print("Starting bot...")
+            run_bot()
+        except Exception as e:
+            print(f"Bot crashed: {e}")
+            print("Restarting in 5 seconds...")
+            time.sleep(5)
