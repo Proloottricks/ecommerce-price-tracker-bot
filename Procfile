@@ -1,2 +1,2 @@
 worker: python bot.py
-price_checker: python scheduler.py
+health: python health_check.py
