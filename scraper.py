@@ -1,10 +1,11 @@
 import requests
 from bs4 import BeautifulSoup
+from fake_useragent import UserAgent
+
+ua = UserAgent()
 
 def scrape_price(url):
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-    }
+    headers = {'User-Agent': ua.random}
     try:
         response = requests.get(url, headers=headers, timeout=10)
         soup = BeautifulSoup(response.text, 'html.parser')
@@ -19,6 +20,10 @@ def scrape_price(url):
             
         elif "ajio" in url:
             price = soup.find("span", class_="prod-sp")
+            return float(price.text.replace("₹", "").replace(",", "")) if price else None
+            
+        elif "shopsy" in url:
+            price = soup.find("div", class_="_30jeq3")
             return float(price.text.replace("₹", "").replace(",", "")) if price else None
             
     except Exception as e:
