@@ -10,7 +10,13 @@ def generate_affiliate_link(url):
         return urlunparse(parsed._replace(query=urlencode(query, doseq=True)))
     
     elif "flipkart" in parsed.netloc:
-        # Similar logic for Flipkart
         return f"{url}&affid={os.getenv('FLIPKART_AFFILIATE_ID')}"
     
-    return url
+    # ========== NEW: AJIO/SHOPSY LINKS ==========
+    elif "ajio" in parsed.netloc:
+        return f"{url}?utm_source=affiliate&utm_medium={os.getenv('AJIO_AFFILIATE_ID')}"
+    
+    elif "shopsy" in parsed.netloc:
+        return f"{url}?affid={os.getenv('SHOPSY_AFFILIATE_ID')}"
+    
+    return url  # Fallback
