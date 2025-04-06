@@ -1,7 +1,15 @@
 import os
 import atexit
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
+from telegram import Update
+from telegram.ext import (
+    Application,
+    CommandHandler,
+    MessageHandler,
+    filters,
+    ContextTypes,
+    CallbackContext
+)
+from pymongo import MongoClient
 from database import add_product, get_user_products, stop_tracking
 from scraper import scrape_price
 from utils import generate_affiliate_link
@@ -20,13 +28,13 @@ products = db["products"]
 def cleanup():
     client.close()
 
-def start(update: Update, context: CallbackContext):
-    update.message.reply_text(
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(
         "🛒 Price Tracker Bot\n\n"
         "Send me product links from Amazon/Flipkart/Ajio/Shopsy to track prices!"
     )
 
-def handle_message(update: Update, context: CallbackContext):
+async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     url = update.message.text
     user_id = update.message.from_user.id
     
@@ -41,7 +49,7 @@ def handle_message(update: Update, context: CallbackContext):
                 [InlineKeyboardButton("❌ Stop Tracking", callback_data=f"stop_{url}")]
             ]
             
-            update.message.reply_text(
+            await update.message.reply_text(
                 f"✅ Tracking Started!\n\n"
                 f"💰 Current Price: ₹{price}\n"
                 f"🔗 [Product Link]({affiliate_link})",
@@ -50,14 +58,12 @@ def handle_message(update: Update, context: CallbackContext):
             )
 
 def main():
-    updater = Updater(os.getenv("TELEGRAM_TOKEN"))
-    dp = updater.dispatcher
+    application = Application.builder().token(os.getenv("TELEGRAM_TOKEN")).build()
     
-    dp.add_handler(CommandHandler("start", start))
-    dp.add_handler(MessageHandler(Filters.text & ~Filters.command, handle_message))
+    application.add_handler(CommandHandler("start", start))
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
     
-    updater.start_polling()
-    updater.idle()
+    application.run_polling()
 
 if __name__ == "__main__":
     main()
