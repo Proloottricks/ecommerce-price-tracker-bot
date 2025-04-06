@@ -46,23 +46,33 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
 
 def main():
+    # Create application with proper timeout settings
     application = Application.builder() \
         .token(os.getenv("TELEGRAM_TOKEN")) \
-        .read_timeout(30) \
-        .get_updates_read_timeout(30) \
+        .read_timeout(60) \  # Increased timeout to 60 seconds
+        .get_updates_read_timeout(60) \
+        .pool_timeout(60) \
         .build()
     
     application.add_handler(CommandHandler("start", start))
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
     
-    application.run_polling(
-        poll_interval=1.0,
-        timeout=30,
-        drop_pending_updates=True
-    )
+    # Run with proper shutdown handling
+    loop = asyncio.get_event_loop()
+    try:
+        print("Starting bot...")
+        application.run_polling(
+            poll_interval=3.0,  # Increased poll interval
+            timeout=60,
+            drop_pending_updates=True,
+            close_loop=False  # Important to prevent loop closure
+        )
+    except Exception as e:
+        print(f"Bot error: {e}")
+    finally:
+        if loop.is_running():
+            loop.stop()
+        print("Bot stopped")
 
 if __name__ == "__main__":
-    try:
-        main()
-    except Exception as e:
-        print(f"Bot crashed: {e}")
+    main()
