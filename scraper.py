@@ -18,15 +18,14 @@ def scrape_price(url):
             price = soup.find("div", class_="_30jeq3")
             return float(price.text.replace("₹", "").replace(",", "")) if price else None
             
-        # ========== NEW: AJIO SUPPORT ==========    
         elif "ajio" in url:
             price = soup.find("span", class_="prod-sp")
             return float(price.text.replace("₹", "").replace(",", "")) if price else None
             
-        # ========== NEW: SHOPSY SUPPORT ==========
         elif "shopsy" in url:
-            price = soup.find("div", class_="_30jeq3")  # Same as Flipkart
+            price = soup.find("div", class_="_30jeq3")
             return float(price.text.replace("₹", "").replace(",", "")) if price else None
             
     except Exception as e:
-        print(f"Scra
+        print(f"Scraping error: {e}")
+        return None
