@@ -12,11 +12,10 @@ def generate_affiliate_link(url):
     elif "flipkart" in parsed.netloc:
         return f"{url}&affid={os.getenv('FLIPKART_AFFILIATE_ID')}"
     
-    # ========== NEW: AJIO/SHOPSY LINKS ==========
     elif "ajio" in parsed.netloc:
         return f"{url}?utm_source=affiliate&utm_medium={os.getenv('AJIO_AFFILIATE_ID')}"
     
     elif "shopsy" in parsed.netloc:
         return f"{url}?affid={os.getenv('SHOPSY_AFFILIATE_ID')}"
     
-    return url  # Fallback
+    return url
