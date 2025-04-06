@@ -12,7 +12,6 @@ from database import add_product, get_user_products, stop_tracking
 from scraper import scrape_price
 from utils import generate_affiliate_link
 from dotenv import load_dotenv
-from datetime import datetime
 
 load_dotenv()
 
@@ -46,32 +45,30 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
 
 def main():
-    # Create application with proper timeout settings
-    application = Application.builder() \
-        .token(os.getenv("TELEGRAM_TOKEN")) \
-        .read_timeout(60) \  # Increased timeout to 60 seconds
-        .get_updates_read_timeout(60) \
-        .pool_timeout(60) \
+    # Builder pattern without inline comments
+    application = (
+        Application.builder()
+        .token(os.getenv("TELEGRAM_TOKEN"))
+        .read_timeout(60)
+        .get_updates_read_timeout(60)
+        .pool_timeout(60)
         .build()
+    )
     
     application.add_handler(CommandHandler("start", start))
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
     
-    # Run with proper shutdown handling
-    loop = asyncio.get_event_loop()
     try:
         print("Starting bot...")
         application.run_polling(
-            poll_interval=3.0,  # Increased poll interval
+            poll_interval=3.0,
             timeout=60,
             drop_pending_updates=True,
-            close_loop=False  # Important to prevent loop closure
+            close_loop=False
         )
     except Exception as e:
         print(f"Bot error: {e}")
     finally:
-        if loop.is_running():
-            loop.stop()
         print("Bot stopped")
 
 if __name__ == "__main__":
