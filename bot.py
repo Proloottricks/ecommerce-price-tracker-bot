@@ -1,5 +1,7 @@
 import os
-import asyncio
+import time
+import threading
+from flask import Flask
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import (
     Application,
@@ -12,15 +14,28 @@ from database import add_product, get_user_products, stop_tracking
 from scraper import scrape_price
 from utils import generate_affiliate_link
 from dotenv import load_dotenv
-from datetime import datetime
 
 load_dotenv()
 
+# Health Check Server Setup
+app = Flask(__name__)
+
+@app.route('/')
+def health_check():
+    try:
+        # Test MongoDB connection if enabled
+        if os.getenv("MONGO_URI"):
+            from pymongo import MongoClient
+            MongoClient(os.getenv("MONGO_URI")).admin.command('ping')
+        return "✅ Bot is Healthy", 200
+    except Exception as e:
+        return f"⚠️ Degraded: {str(e)}", 500
+
+def run_flask():
+    app.run(host='0.0.0.0', port=8080, use_reloader=False)
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(
-        "🛒 Price Tracker Bot\n\n"
-        "Send me product links from Amazon/Flipkart/Ajio/Shopsy to track prices!"
-    )
+    await update.message.reply_text("🛒 Price Tracker Bot is Active!")
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     url = update.message.text
@@ -56,12 +71,17 @@ def run_bot():
     application.run_polling()
 
 if __name__ == "__main__":
-    # Run bot with auto-restart
+    # Start health check server
+    flask_thread = threading.Thread(target=run_flask)
+    flask_thread.daemon = True
+    flask_thread.start()
+
+    # Start bot with auto-restart
     while True:
         try:
             print("Starting bot...")
             run_bot()
         except Exception as e:
-            print(f"Bot crashed: {e}")
+            print(f"Bot error: {e}")
             print("Restarting in 5 seconds...")
             time.sleep(5)
