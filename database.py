@@ -1,10 +1,17 @@
 from pymongo import MongoClient
+from pymongo.errors import PyMongoError
 import os
 from dotenv import load_dotenv
+from datetime import datetime
 
 load_dotenv()
 
-client = MongoClient(os.getenv("MONGO_URI"))
+client = MongoClient(
+    os.getenv("MONGO_URI"),
+    serverSelectionTimeoutMS=5000,
+    connectTimeoutMS=30000,
+    socketTimeoutMS=30000
+)
 db = client["PriceTrackerDB"]
 products = db["products"]
 
